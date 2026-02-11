@@ -213,6 +213,43 @@ body {
 }
 .link:hover { text-decoration: underline; }
 
+.action-menu { position: relative; display: inline-block; }
+.menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.trigger-caret {
+  width: 16px; height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center;
+}
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 60;
+  padding: 6px;
+}
+.menu.right { right: 0; }
+.menu.left { left: 0; }
+.menu-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  border-radius: 8px;
+}
+.menu-item:hover { background: #f5f7ff; }
+.menu-item.danger { color: #b91c1c; }
+.menu-item.danger:hover { background: #fff1f1; }
+
 /* Cards mejorados */
 .card {
   background: linear-gradient(145deg, var(--surface), var(--surface-2));
@@ -611,4 +648,87 @@ button.secondary:hover {
 
 @media (max-width: 480px) {
   .filters { grid-template-columns: 1fr; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1220;
+    --bg-glass: rgba(11, 18, 32, 0.85);
+    --surface: #0f1628;
+    --surface-2: #111b2f;
+    --surface-glass: rgba(17, 27, 47, 0.72);
+    --text: #e5e7eb;
+    --text-muted: #9aa4b2;
+    --text-light: #b6c0cc;
+    --border: #1f2a3b;
+    --border-strong: #2a364a;
+    --border-focus: rgba(76, 111, 255, 0.25);
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.55);
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  body {
+    background:
+      radial-gradient(1100px 600px at 15% -5%, rgba(76,111,255,0.10), transparent 65%),
+      radial-gradient(900px 500px at 85% 10%, rgba(255,107,107,0.06), transparent 60%),
+      var(--bg);
+    color: var(--text);
+  }
+
+  .admin-header {
+    background: var(--surface-glass);
+    border-bottom-color: var(--border);
+  }
+
+  .table thead th {
+    background: #0f1628;
+    color: var(--text);
+    border-bottom-color: var(--border);
+  }
+  .table tbody td {
+    border-bottom-color: #172033;
+    color: var(--text);
+  }
+  .table tbody tr:hover td {
+    background: #0c1424;
+  }
+
+  .card {
+    background: linear-gradient(145deg, var(--surface), var(--surface-2));
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  select, input, button.secondary {
+    background: var(--surface-glass);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  select:hover, input:hover, button.secondary:hover {
+    background: #121a2c;
+  }
+  select:focus, input:focus {
+    background: #0f1628;
+  }
+
+  .chip {
+    background: #111827;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .chip.gray { background: #111827; color: var(--text); }
+
+  .mini-progress {
+    background: #172033;
+    border-color: var(--border);
+  }
+
+  .menu {
+    background: #0f1628;
+    border-color: var(--border);
+  }
+  .menu-item { color: var(--text); }
+  .menu-item:hover { background: #121a2c; }
 }

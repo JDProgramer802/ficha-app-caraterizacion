@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import FancySelect from "../../components/FancySelect";
+import ActionMenu from "../../components/ActionMenu";
 
 type Item = {
   id: string;
@@ -162,62 +163,79 @@ export default function Admin() {
                 </td>
                 <td>{new Date(i.updatedAt).toLocaleString()}</td>
                 <td>
-                  <div className="admin-actions">
-                    <button onClick={() => {
-                      if (typeof document !== "undefined") {
-                        document.cookie = `adminFichaId=${i.id}; path=/; max-age=3600`;
-                      }
-                      router.push(`/admin/ficha`);
-                    }}>Ver</button>
-                    <a href={`/api/fichas/${i.id}/export/pdf`}>PDF</a>
-                    <a href={`/api/fichas/${i.id}/export/excel`}>Excel</a>
-                    <button
-                      onClick={() => {
-                        const url = `${location.origin}/ficha`;
-                        navigator.clipboard?.writeText(url);
-                      }}
-                    >
-                      Copiar enlace
-                    </button>
-                    <button onClick={() => {
-                      if (typeof document !== "undefined") {
-                        document.cookie = `fichaId=${i.id}; path=/; max-age=3600`;
-                      }
-                      router.push(`/ficha`);
-                    }}>Ver pública</button>
-                    <button
-                      onClick={async () => {
-                        const ok = typeof window !== "undefined" ? window.confirm("¿Eliminar ficha?") : true;
-                        if (!ok) return;
-                        await fetch(`/api/fichas/${i.id}`, { method: "DELETE" });
-                        await load();
-                      }}
-                    >
-                      Eliminar
-                    </button>
-                    <button
-                      onClick={async () => {
-                        try {
-                          const r = await fetch(`/api/fichas/${i.id}`);
-                          const ficha = await r.json();
-                          const nuevo = { ...ficha, id: undefined, estado: "borrador" as const };
-                          const create = await fetch("/api/fichas", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(nuevo)
-                          });
-                          if (!create.ok) return;
-                          const data = await create.json();
+                  <ActionMenu
+                    label="Acciones"
+                    items={[
+                      {
+                        label: "Ver",
+                        onClick: () => {
                           if (typeof document !== "undefined") {
-                            document.cookie = `adminFichaId=${data.id}; path=/; max-age=3600`;
+                            document.cookie = `adminFichaId=${i.id}; path=/; max-age=3600`;
                           }
                           router.push(`/admin/ficha`);
-                        } catch {}
-                      }}
-                    >
-                      Duplicar
-                    </button>
-                  </div>
+                        }
+                      },
+                      {
+                        label: "Ver pública",
+                        onClick: () => {
+                          if (typeof document !== "undefined") {
+                            document.cookie = `fichaId=${i.id}; path=/; max-age=3600`;
+                          }
+                          router.push(`/ficha`);
+                        }
+                      },
+                      {
+                        label: "Copiar enlace",
+                        onClick: () => {
+                          const url = `${location.origin}/ficha`;
+                          navigator.clipboard?.writeText(url);
+                        }
+                      },
+                      {
+                        label: "Exportar PDF",
+                        onClick: () => {
+                          window.open(`/api/fichas/${i.id}/export/pdf`, "_blank");
+                        }
+                      },
+                      {
+                        label: "Exportar Excel",
+                        onClick: () => {
+                          window.open(`/api/fichas/${i.id}/export/excel`, "_blank");
+                        }
+                      },
+                      {
+                        label: "Duplicar",
+                        onClick: async () => {
+                          try {
+                            const r = await fetch(`/api/fichas/${i.id}`);
+                            const ficha = await r.json();
+                            const nuevo = { ...ficha, id: undefined, estado: "borrador" as const };
+                            const create = await fetch("/api/fichas", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify(nuevo)
+                            });
+                            if (!create.ok) return;
+                            const data = await create.json();
+                            if (typeof document !== "undefined") {
+                              document.cookie = `adminFichaId=${data.id}; path=/; max-age=3600`;
+                            }
+                            router.push(`/admin/ficha`);
+                          } catch {}
+                        }
+                      },
+                      {
+                        label: "Eliminar",
+                        danger: true,
+                        onClick: async () => {
+                          const ok = typeof window !== "undefined" ? window.confirm("¿Eliminar ficha?") : true;
+                          if (!ok) return;
+                          await fetch(`/api/fichas/${i.id}`, { method: "DELETE" });
+                          await load();
+                        }
+                      }
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useEffect, useState } from "react";
 import "../styles/globals.css";
 import ActionMenu from "../components/ActionMenu";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
@@ -36,7 +36,6 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="alternate icon" href="/favicon.svg" type="image/svg+xml" />
       </Head>
       <Component {...pageProps} />
-      <Analytics />
       <div className="theme-switch">
         <ActionMenu
           label={theme === "dark" ? "Tema: Oscuro" : theme === "light" ? "Tema: Claro" : "Tema: Sistema"}
@@ -49,6 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
           ]}
         />
       </div>
+      <Analytics />
     </>
   );
 }

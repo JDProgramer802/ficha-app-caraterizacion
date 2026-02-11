@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import Progress from "../../components/Progress";
+import BridgeSelect from "../../components/BridgeSelect";
 
 type UnidadServicio = {
   regional: string;
@@ -518,11 +519,11 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Tipo documento <span className="required">*</span></label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.tipo_documento || "Registro Civil"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, tipo_documento: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, tipo_documento: v as any } as any
                     })
                   }
                 >
@@ -532,7 +533,7 @@ export default function FichaWizard() {
                   <option>Pasaporte</option>
                   <option>Permiso especial de permanencia (PEP)</option>
                   <option>No tiene</option>
-                </select>
+                </BridgeSelect>
                 {!ficha.modulo2_nina_nino?.tipo_documento && <div className="error-text">Campo obligatorio</div>}
               </div>
               <div>
@@ -555,18 +556,18 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Sexo <span className="required">*</span></label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.sexo || "Mujer"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, sexo: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, sexo: v as any } as any
                     })
                   }
                 >
                   <option>Mujer</option>
                   <option>Hombre</option>
                   <option>Intersexual</option>
-                </select>
+                </BridgeSelect>
                 {!ficha.modulo2_nina_nino?.sexo && <div className="error-text">Campo obligatorio</div>}
               </div>
               <div>
@@ -605,35 +606,35 @@ export default function FichaWizard() {
               </div>
               <div>
                 <label>País de nacimiento</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.pais_nacimiento || "Colombia"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, pais_nacimiento: e.target.value } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, pais_nacimiento: v } as any
                     })
                   }
                 >
                   {PAISES.map((p) => (
                     <option key={p} value={p}>{p}</option>
                   ))}
-                </select>
+                </BridgeSelect>
               </div>
             </div>
             <div className="row">
               <div>
                 <label>Nacionalidad principal</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.nacionalidad_principal || "Colombia"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, nacionalidad_principal: e.target.value } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, nacionalidad_principal: v } as any
                     })
                   }
                 >
                   {PAISES.map((p) => (
                     <option key={p} value={p}>{p}</option>
                   ))}
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>Segunda nacionalidad</label>
@@ -650,14 +651,14 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Departamento de residencia</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.departamento_residencia || "Atlántico"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo2_nina_nino: {
                         ...ficha.modulo2_nina_nino,
-                        departamento_residencia: e.target.value,
-                        municipio_residencia: MUNICIPIOS_MAP[e.target.value]
+                        departamento_residencia: v,
+                        municipio_residencia: MUNICIPIOS_MAP[v]
                           ? (MUNICIPIOS_MAP[e.target.value][0] || "")
                           : (ficha.modulo2_nina_nino?.municipio_residencia || "")
                       } as any
@@ -667,23 +668,23 @@ export default function FichaWizard() {
                   {DEPARTAMENTOS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>Municipio de residencia</label>
                 {MUNICIPIOS_MAP[ficha.modulo2_nina_nino?.departamento_residencia || ""] ? (
-                  <select
+                  <BridgeSelect
                     value={ficha.modulo2_nina_nino?.municipio_residencia || ""}
-                    onChange={(e) =>
+                    onChange={(v) =>
                       updateFicha({
-                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, municipio_residencia: e.target.value } as any
+                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, municipio_residencia: v } as any
                       })
                     }
                   >
                     {MUNICIPIOS_MAP[ficha.modulo2_nina_nino?.departamento_residencia || ""].map((m) => (
                       <option key={m} value={m}>{m}</option>
                     ))}
-                  </select>
+                  </BridgeSelect>
                 ) : (
                   <input
                     value={ficha.modulo2_nina_nino?.municipio_residencia || ""}
@@ -710,27 +711,27 @@ export default function FichaWizard() {
               </div>
               <div>
                 <label>Discapacidad</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.discapacidad || "NO"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, discapacidad: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, discapacidad: v as any } as any
                     })
                   }
                 >
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
               </div>
             </div>
             <div className="row">
               <div>
                 <label>Categoría de discapacidad</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.categoria_discapacidad || "Ninguna"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, categoria_discapacidad: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, categoria_discapacidad: v as any } as any
                     })
                   }
                 >
@@ -746,15 +747,15 @@ export default function FichaWizard() {
                   <option>Voz y habla</option>
                   <option>Piel, pelo y uñas</option>
                   <option>Ninguna</option>
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>Grupo étnico</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.grupo_etnico || "Ninguno"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, grupo_etnico: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, grupo_etnico: v as any } as any
                     })
                   }
                 >
@@ -765,18 +766,18 @@ export default function FichaWizard() {
                   <option>Población Gitana o Rrom</option>
                   <option>Población Palenquera</option>
                   <option>Ninguno</option>
-                </select>
+                </BridgeSelect>
               </div>
             </div>
             <h3 style={{ marginTop: 12 }}>Condiciones habitacionales</h3>
             <div className="row">
               <div>
                 <label>¿La niña o el niño duerme en?</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.dormir_en || "Cama"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, dormir_en: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, dormir_en: v as any } as any
                     })
                   }
                 >
@@ -787,7 +788,7 @@ export default function FichaWizard() {
                   <option>Cuna</option>
                   <option>Plancha</option>
                   <option>Otro</option>
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>Si respondió “Otro”, indique cuál</label>
@@ -804,37 +805,37 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>¿Duerme con adultos en la misma habitación?</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.duerme_con_adultos_habitacion || "NO"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo2_nina_nino: {
                         ...ficha.modulo2_nina_nino,
-                        duerme_con_adultos_habitacion: e.target.value as any
+                        duerme_con_adultos_habitacion: v as any
                       } as any
                     })
                   }
                 >
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>¿Duerme con adultos en la misma cama?</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.duerme_con_adultos_cama || "NO"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo2_nina_nino: {
                         ...ficha.modulo2_nina_nino,
-                        duerme_con_adultos_cama: e.target.value as any
+                        duerme_con_adultos_cama: v as any
                       } as any
                     })
                   }
                 >
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
               </div>
             </div>
           </div>
@@ -857,26 +858,26 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Afiliación al SGSSS</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.afiliacion_salud || "Afiliado"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, afiliacion_salud: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, afiliacion_salud: v as any } as any
                     })
                   }
                 >
                   <option>Afiliado</option>
                   <option>No afiliado</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo2_nina_nino?.afiliacion_salud === "No afiliado" && (
                 <div>
                   <label>Razón de no afiliación</label>
-                  <select
+                  <BridgeSelect
                     value={ficha.modulo2_nina_nino?.razon_no_afiliado || ""}
-                    onChange={(e) =>
+                    onChange={(v) =>
                       updateFicha({
-                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, razon_no_afiliado: e.target.value as any } as any
+                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, razon_no_afiliado: v as any } as any
                       })
                     }
                   >
@@ -887,7 +888,7 @@ export default function FichaWizard() {
                     <option>No le interesa</option>
                     <option>No hay entidad cercana</option>
                     <option>Otra</option>
-                  </select>
+                  </BridgeSelect>
                 </div>
               )}
             </div>
@@ -907,26 +908,26 @@ export default function FichaWizard() {
             <div className="row" style={{ marginTop: 12 }}>
               <div>
                 <label>Esquema de vacunación</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.esquema_vacunacion || "Esquema Completo"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, esquema_vacunacion: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, esquema_vacunacion: v as any } as any
                     })
                   }
                 >
                   <option>Esquema Completo</option>
                   <option>Esquema incompleto</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo2_nina_nino?.esquema_vacunacion === "Esquema incompleto" && (
                 <div>
                   <label>Razón de esquema incompleto</label>
-                  <select
+                  <BridgeSelect
                     value={ficha.modulo2_nina_nino?.razon_vacunacion_incompleta || ""}
-                    onChange={(e) =>
+                    onChange={(v) =>
                       updateFicha({
-                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, razon_vacunacion_incompleta: e.target.value as any } as any
+                        modulo2_nina_nino: { ...ficha.modulo2_nina_nino, razon_vacunacion_incompleta: v as any } as any
                       })
                     }
                   >
@@ -938,7 +939,7 @@ export default function FichaWizard() {
                     <option>No hay entidad cercana</option>
                     <option>Motivos religiosos</option>
                     <option>Otra</option>
-                  </select>
+                  </BridgeSelect>
                 </div>
               )}
             </div>
@@ -960,27 +961,27 @@ export default function FichaWizard() {
                 <div className="row" style={{ marginTop: 12 }}>
                   <div>
                     <label>Atención en salud bucal</label>
-                    <select
+                    <BridgeSelect
                       value={ficha.modulo2_nina_nino?.atencion_bucal_mayor6m || ""}
-                      onChange={(e) =>
+                      onChange={(v) =>
                         updateFicha({
-                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, atencion_bucal_mayor6m: e.target.value as any } as any
+                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, atencion_bucal_mayor6m: v as any } as any
                         })
                       }
                     >
                       <option value="">Seleccione</option>
                       <option>Con atención salud bucal</option>
                       <option>Sin atención salud bucal</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   {ficha.modulo2_nina_nino?.atencion_bucal_mayor6m === "Sin atención salud bucal" && (
                     <div>
                       <label>Motivo</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.motivo_no_bucal || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
-                            modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_bucal: e.target.value as any } as any
+                            modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_bucal: v as any } as any
                           })
                         }
                       >
@@ -991,7 +992,7 @@ export default function FichaWizard() {
                         <option>No hay entidad cercana</option>
                         <option>Motivos religiosos</option>
                         <option>Otro</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                   )}
                 </div>
@@ -1011,27 +1012,27 @@ export default function FichaWizard() {
                 <div className="row" style={{ marginTop: 12 }}>
                   <div>
                     <label>Valoración auditiva y comunicativa</label>
-                    <select
+                    <BridgeSelect
                       value={ficha.modulo2_nina_nino?.valoracion_auditiva_mayor6m || ""}
-                      onChange={(e) =>
+                      onChange={(v) =>
                         updateFicha({
-                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_auditiva_mayor6m: e.target.value as any } as any
+                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_auditiva_mayor6m: v as any } as any
                         })
                       }
                     >
                       <option value="">Seleccione</option>
                       <option>Con valoración auditiva</option>
                       <option>Sin valoración auditiva</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   {ficha.modulo2_nina_nino?.valoracion_auditiva_mayor6m === "Sin valoración auditiva" && (
                     <div>
                       <label>Motivo</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.motivo_no_auditiva || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
-                            modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_auditiva: e.target.value as any } as any
+                            modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_auditiva: v as any } as any
                           })
                         }
                       >
@@ -1042,7 +1043,7 @@ export default function FichaWizard() {
                         <option>No hay entidad cercana</option>
                         <option>Motivos religiosos</option>
                         <option>Otro</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                   )}
                 </div>
@@ -1064,26 +1065,26 @@ export default function FichaWizard() {
             {yearsFrom(toIso(ficha.modulo2_nina_nino?.fecha_nacimiento)) >= 3 && (
               <div style={{ marginTop: 12 }}>
                 <label>Valoración de salud visual</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.valoracion_visual_mayor3a || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_visual_mayor3a: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_visual_mayor3a: v as any } as any
                     })
                   }
                 >
                   <option value="">Seleccione</option>
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
                 {ficha.modulo2_nina_nino?.valoracion_visual_mayor3a === "NO" && (
                   <div style={{ marginTop: 8 }}>
                     <label>Motivo</label>
-                    <select
+                    <BridgeSelect
                       value={ficha.modulo2_nina_nino?.motivo_no_visual || ""}
-                      onChange={(e) =>
+                      onChange={(v) =>
                         updateFicha({
-                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_visual: e.target.value as any } as any
+                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_visual: v as any } as any
                         })
                       }
                     >
@@ -1094,7 +1095,7 @@ export default function FichaWizard() {
                       <option>No hay entidad cercana</option>
                       <option>Motivos religiosos</option>
                       <option>Otro</option>
-                    </select>
+                    </BridgeSelect>
                     {!ficha.modulo2_nina_nino?.motivo_no_visual && <div className="error-text">Campo obligatorio</div>}
                   </div>
                 )}
@@ -1116,13 +1117,13 @@ export default function FichaWizard() {
             <div className="row" style={{ marginTop: 12 }}>
               <div>
                 <label>¿Es alérgico a medicamento o alimento?</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.alergico_medicamento_alimento || "No"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo2_nina_nino: {
                         ...ficha.modulo2_nina_nino,
-                        alergico_medicamento_alimento: e.target.value as any
+                        alergico_medicamento_alimento: v as any
                       } as any
                     })
                   }
@@ -1130,7 +1131,7 @@ export default function FichaWizard() {
                   <option>Si</option>
                   <option>No</option>
                   <option>No sabe</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo2_nina_nino?.alergico_medicamento_alimento === "Si" && (
                 <div>
@@ -1150,17 +1151,17 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Cuenta con valoración integral</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.valoracion_integral || "SI"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_integral: e.target.value as any } as any
+                      modulo2_nina_nino: { ...ficha.modulo2_nina_nino, valoracion_integral: v as any } as any
                     })
                   }
                 >
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo2_nina_nino?.valoracion_integral === "SI" && (
                 <div>
@@ -1183,13 +1184,13 @@ export default function FichaWizard() {
             {ficha.modulo2_nina_nino?.valoracion_integral === "NO" && (
               <div>
                 <label>Razón de no contar con valoración integral</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo2_nina_nino?.razon_no_valoracion_integral || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo2_nina_nino: {
                         ...ficha.modulo2_nina_nino,
-                        razon_no_valoracion_integral: e.target.value as any
+                        razon_no_valoracion_integral: v as any
                       } as any
                     })
                   }
@@ -1200,7 +1201,7 @@ export default function FichaWizard() {
                   <option>No le interesa</option>
                   <option>No hay entidad cercana</option>
                   <option>Otro</option>
-                </select>
+                </BridgeSelect>
               </div>
             )}
             {ficha.modulo2_nina_nino?.razon_no_valoracion_integral === "Otro" && (
@@ -1225,13 +1226,13 @@ export default function FichaWizard() {
                 <div className="row">
                   <div>
                     <label>¿Recibe leche materna?</label>
-                    <select
+                    <BridgeSelect
                       value={ficha.modulo2_nina_nino?.lactancia_materna_menor6m || ""}
-                      onChange={(e) =>
+                      onChange={(v) =>
                         updateFicha({
                           modulo2_nina_nino: {
                             ...ficha.modulo2_nina_nino,
-                            lactancia_materna_menor6m: e.target.value as any
+                            lactancia_materna_menor6m: v as any
                           } as any
                         })
                       }
@@ -1239,18 +1240,18 @@ export default function FichaWizard() {
                       <option value="">Seleccione</option>
                       <option>SI</option>
                       <option>NO</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   {ficha.modulo2_nina_nino?.lactancia_materna_menor6m === "NO" && (
                     <div>
                       <label>Motivo</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.motivo_no_lactancia_menor6m || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
                             modulo2_nina_nino: {
                               ...ficha.modulo2_nina_nino,
-                              motivo_no_lactancia_menor6m: e.target.value as any
+                              motivo_no_lactancia_menor6m: v as any
                             } as any
                           })
                         }
@@ -1264,7 +1265,7 @@ export default function FichaWizard() {
                         <option>Tratamiento médico</option>
                         <option>Presión familiar</option>
                         <option>Otro</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                   )}
                 </div>
@@ -1287,13 +1288,13 @@ export default function FichaWizard() {
                 <div className="row" style={{ marginTop: 12 }}>
                   <div>
                     <label>¿Exclusivamente leche materna?</label>
-                    <select
+                    <BridgeSelect
                       value={ficha.modulo2_nina_nino?.exclusiva_leche_materna_menor6m || ""}
-                      onChange={(e) =>
+                      onChange={(v) =>
                         updateFicha({
                           modulo2_nina_nino: {
                             ...ficha.modulo2_nina_nino,
-                            exclusiva_leche_materna_menor6m: e.target.value as any
+                            exclusiva_leche_materna_menor6m: v as any
                           } as any
                         })
                       }
@@ -1301,18 +1302,18 @@ export default function FichaWizard() {
                       <option value="">Seleccione</option>
                       <option>Si, exclusivamente leche materna</option>
                       <option>No, recibe otros alimentos</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   {ficha.modulo2_nina_nino?.exclusiva_leche_materna_menor6m === "No, recibe otros alimentos" && (
                     <div>
                       <label>Edad cuando ofreció otros alimentos</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.edad_introduccion_alimentos_menor6m || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
                             modulo2_nina_nino: {
                               ...ficha.modulo2_nina_nino,
-                              edad_introduccion_alimentos_menor6m: e.target.value as any
+                              edad_introduccion_alimentos_menor6m: v as any
                             } as any
                           })
                         }
@@ -1324,7 +1325,7 @@ export default function FichaWizard() {
                         <option>(3 meses)</option>
                         <option>(4 meses)</option>
                         <option>(5 meses)</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                   )}
                 </div>
@@ -1351,13 +1352,13 @@ export default function FichaWizard() {
                   <div className="row">
                     <div>
                       <label>¿Recibió leche materna exclusiva?</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.recibio_leche_materna_exclusiva_7a24m || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
                             modulo2_nina_nino: {
                               ...ficha.modulo2_nina_nino,
-                              recibio_leche_materna_exclusiva_7a24m: e.target.value as any
+                              recibio_leche_materna_exclusiva_7a24m: v as any
                             } as any
                           })
                         }
@@ -1365,19 +1366,19 @@ export default function FichaWizard() {
                         <option value="">Seleccione</option>
                         <option>Si recibió leche materna exclusiva</option>
                         <option>No recibió leche materna exclusiva</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                     {ficha.modulo2_nina_nino?.recibio_leche_materna_exclusiva_7a24m ===
                       "No recibió leche materna exclusiva" && (
                         <div>
                           <label>Motivo</label>
-                          <select
+                          <BridgeSelect
                             value={ficha.modulo2_nina_nino?.motivo_no_exclusiva_7a24m || ""}
-                            onChange={(e) =>
+                            onChange={(v) =>
                               updateFicha({
                                 modulo2_nina_nino: {
                                   ...ficha.modulo2_nina_nino,
-                                  motivo_no_exclusiva_7a24m: e.target.value as any
+                                  motivo_no_exclusiva_7a24m: v as any
                                 } as any
                               })
                             }
@@ -1391,7 +1392,7 @@ export default function FichaWizard() {
                             <option>Tratamiento médico</option>
                             <option>Presión familiar</option>
                             <option>Otro</option>
-                          </select>
+                          </BridgeSelect>
                         </div>
                       )}
                   </div>
@@ -1414,13 +1415,13 @@ export default function FichaWizard() {
                   <div className="row" style={{ marginTop: 12 }}>
                     <div>
                       <label>Edad cuando ofreció otros alimentos</label>
-                      <select
+                      <BridgeSelect
                         value={ficha.modulo2_nina_nino?.edad_introduccion_alimentos_7a24m || ""}
-                        onChange={(e) =>
+                        onChange={(v) =>
                           updateFicha({
                             modulo2_nina_nino: {
                               ...ficha.modulo2_nina_nino,
-                              edad_introduccion_alimentos_7a24m: e.target.value as any
+                              edad_introduccion_alimentos_7a24m: v as any
                             } as any
                           })
                         }
@@ -1439,7 +1440,7 @@ export default function FichaWizard() {
                         <option>(10 meses)</option>
                         <option>(11 meses)</option>
                         <option>(12 meses)</option>
-                      </select>
+                      </BridgeSelect>
                     </div>
                   </div>
                   <div style={{ marginTop: 12 }}>
@@ -1530,13 +1531,13 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Tipo documento del usuario(a) <span className="required">*</span></label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo3_familia?.tipo_documento_usuario || "Registro Civil"}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
                       modulo3_familia: {
                         ...ficha.modulo3_familia,
-                        tipo_documento_usuario: e.target.value as any
+                        tipo_documento_usuario: v as any
                       } as any
                     })
                   }
@@ -1547,7 +1548,7 @@ export default function FichaWizard() {
                   <option>Pasaporte</option>
                   <option>Permiso especial de permanencia (PEP)</option>
                   <option>No tiene</option>
-                </select>
+                </BridgeSelect>
                 {!ficha.modulo3_familia?.tipo_documento_usuario && <div className="error-text">Campo obligatorio</div>}
               </div>
               <div>
@@ -1631,11 +1632,11 @@ export default function FichaWizard() {
                 <div className="row">
                   <div>
                     <label>Parentesco</label>
-                    <select
+                    <BridgeSelect
                       value={m.parentesco}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, parentesco: e.target.value as any };
+                        lista[idx] = { ...m, parentesco: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
@@ -1690,11 +1691,11 @@ export default function FichaWizard() {
                   </div>
                   <div>
                     <label>Tipo de documento</label>
-                    <select
+                    <BridgeSelect
                       value={m.tipo_documento}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, tipo_documento: e.target.value as any };
+                        lista[idx] = { ...m, tipo_documento: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
@@ -1704,7 +1705,7 @@ export default function FichaWizard() {
                       <option>Pasaporte</option>
                       <option>Permiso especial de permanencia (PEP)</option>
                       <option>No tiene</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   <div>
                     <label>Número de documento</label>
@@ -1759,18 +1760,18 @@ export default function FichaWizard() {
                 <div className="row">
                   <div>
                     <label>Sexo</label>
-                    <select
+                    <BridgeSelect
                       value={m.sexo || "Mujer"}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, sexo: e.target.value as any };
+                        lista[idx] = { ...m, sexo: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
                       <option>Mujer</option>
                       <option>Hombre</option>
                       <option>Intersexual</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   <div>
                     <label>Género</label>
@@ -1798,11 +1799,11 @@ export default function FichaWizard() {
                 <div className="row">
                   <div>
                     <label>Grupo étnico</label>
-                    <select
+                    <BridgeSelect
                       value={m.grupo_etnico || "Ninguno"}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, grupo_etnico: e.target.value as any };
+                        lista[idx] = { ...m, grupo_etnico: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
@@ -1817,31 +1818,31 @@ export default function FichaWizard() {
                   </div>
                   <div>
                     <label>¿Sabe leer y escribir?</label>
-                    <select
+                    <BridgeSelect
                       value={m.sabe_leer_escribir || "No"}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, sabe_leer_escribir: e.target.value as any };
+                        lista[idx] = { ...m, sabe_leer_escribir: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
                       <option>Sí</option>
                       <option>No</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   <div>
                     <label>¿Actualmente estudia?</label>
-                    <select
+                    <BridgeSelect
                       value={m.actualmente_estudia || "No"}
-                      onChange={(e) => {
+                      onChange={(v) => {
                         const lista = [...(ficha.modulo3_familia?.integrantes || [])];
-                        lista[idx] = { ...m, actualmente_estudia: e.target.value as any };
+                        lista[idx] = { ...m, actualmente_estudia: v as any };
                         updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
                       }}
                     >
                       <option>Sí</option>
                       <option>No</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                 </div>
                 <div className="row">
@@ -1927,11 +1928,11 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Clase de ubicación</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo3_familia?.clase_ubicacion || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo3_familia: { ...ficha.modulo3_familia, clase_ubicacion: e.target.value as any } as any
+                      modulo3_familia: { ...ficha.modulo3_familia, clase_ubicacion: v as any } as any
                     })
                   }
                 >
@@ -1939,33 +1940,33 @@ export default function FichaWizard() {
                   <option>Cabecera municipal</option>
                   <option>Centro poblado</option>
                   <option>Rural disperso</option>
-                </select>
+                </BridgeSelect>
               </div>
               <div>
                 <label>Territorio étnico</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo3_familia?.territorio_etnico || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo3_familia: { ...ficha.modulo3_familia, territorio_etnico: e.target.value as any } as any
+                      modulo3_familia: { ...ficha.modulo3_familia, territorio_etnico: v as any } as any
                     })
                   }
                 >
                   <option value="">Seleccione</option>
                   <option>SI</option>
                   <option>NO</option>
-                </select>
+                </BridgeSelect>
               </div>
             </div>
             {ficha.modulo3_familia?.territorio_etnico === "SI" && (
               <div className="row">
                 <div>
                   <label>Tipo de territorio</label>
-                  <select
+                  <BridgeSelect
                     value={ficha.modulo3_familia?.territorio_tipo || ""}
-                    onChange={(e) =>
+                    onChange={(v) =>
                       updateFicha({
-                        modulo3_familia: { ...ficha.modulo3_familia, territorio_tipo: e.target.value as any } as any
+                        modulo3_familia: { ...ficha.modulo3_familia, territorio_tipo: v as any } as any
                       })
                     }
                   >
@@ -1973,7 +1974,7 @@ export default function FichaWizard() {
                     <option>Resguardo indígena</option>
                     <option>Territorio colectivo comunidad negra</option>
                     <option>No aplica</option>
-                  </select>
+                  </BridgeSelect>
                 </div>
                 <div>
                   <label>Nombre de la comunidad</label>
@@ -1991,11 +1992,11 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Tipo de vivienda</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo3_familia?.tipo_vivienda || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo3_familia: { ...ficha.modulo3_familia, tipo_vivienda: e.target.value as any } as any
+                      modulo3_familia: { ...ficha.modulo3_familia, tipo_vivienda: v as any } as any
                     })
                   }
                 >
@@ -2009,7 +2010,7 @@ export default function FichaWizard() {
                   <option>Casa lote</option>
                   <option>Establecimiento de reclusión</option>
                   <option>Otra</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo3_familia?.tipo_vivienda === "Otra" && (
                 <div>
@@ -2028,11 +2029,11 @@ export default function FichaWizard() {
             <div className="row">
               <div>
                 <label>Tipo de tenencia</label>
-                <select
+                <BridgeSelect
                   value={ficha.modulo3_familia?.tipo_tenencia || ""}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     updateFicha({
-                      modulo3_familia: { ...ficha.modulo3_familia, tipo_tenencia: e.target.value as any } as any
+                      modulo3_familia: { ...ficha.modulo3_familia, tipo_tenencia: v as any } as any
                     })
                   }
                 >
@@ -2043,7 +2044,7 @@ export default function FichaWizard() {
                   <option>Ocupador de hecho</option>
                   <option>En concesión</option>
                   <option>Otra</option>
-                </select>
+                </BridgeSelect>
               </div>
               {ficha.modulo3_familia?.tipo_tenencia === "Otra" && (
                 <div>

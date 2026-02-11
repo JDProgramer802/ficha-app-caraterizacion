@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import FancySelect from "../../components/FancySelect";
 
 type Item = {
   id: string;
@@ -72,11 +73,16 @@ export default function Admin() {
       </div>
       <div className="admin-main">
         <div className="filters-grid">
-          <select value={q.estado} onChange={(e) => setQ({ ...q, estado: e.target.value })}>
-            <option value="">Estado</option>
-            <option value="borrador">Borrador</option>
-            <option value="enviado">Enviado</option>
-          </select>
+          <FancySelect
+            value={q.estado}
+            onChange={(v) => setQ({ ...q, estado: v })}
+            options={[
+              { value: "", label: "Estado" },
+              { value: "borrador", label: "Borrador" },
+              { value: "enviado", label: "Enviado" }
+            ]}
+            placeholder="Estado"
+          />
           <input placeholder="Fecha (DD/MM/AAAA)" value={q.fecha} onChange={(e) => setQ({ ...q, fecha: e.target.value })} />
           <input placeholder="Regional" value={q.regional} onChange={(e) => setQ({ ...q, regional: e.target.value })} />
           <input placeholder="Centro Zonal" value={q.centro_zonal} onChange={(e) => setQ({ ...q, centro_zonal: e.target.value })} />
@@ -110,20 +116,22 @@ export default function Admin() {
                       <span className="dot" />
                       {i.estado}
                     </span>
-                    <select
+                    <FancySelect
+                      compact
                       value={i.estado}
-                      onChange={async (e) => {
+                      onChange={async (v) => {
                         await fetch(`/api/fichas/${i.id}/status`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ estado: e.target.value })
+                          body: JSON.stringify({ estado: v })
                         });
                         await load();
                       }}
-                    >
-                      <option value="borrador">borrador</option>
-                      <option value="enviado">enviado</option>
-                    </select>
+                      options={[
+                        { value: "borrador", label: "borrador" },
+                        { value: "enviado", label: "enviado" }
+                      ]}
+                    />
                   </div>
                 </td>
                 <td>{i.fecha}</td>

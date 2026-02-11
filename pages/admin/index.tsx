@@ -66,7 +66,10 @@ export default function Admin() {
             const r = await fetch("/api/fichas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
             if (!r.ok) return;
             const data = await r.json();
-            router.push(`/admin/ficha/${data.id}`);
+            if (typeof document !== "undefined") {
+              document.cookie = `adminFichaId=${data.id}; path=/; max-age=3600`;
+            }
+            router.push(`/admin/ficha`);
           }}>Crear nueva</button>
           <a href="/api/fichas/export/excel">Exportar Excel</a>
         </div>
@@ -94,7 +97,7 @@ export default function Admin() {
         <table className="table">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Ficha</th>
               <th>Estado</th>
               <th>Fecha</th>
               <th>Regional</th>
@@ -109,7 +112,20 @@ export default function Admin() {
           <tbody>
             {filtered.map((i) => (
               <tr key={i.id}>
-                <td>{i.id}</td>
+                <td>
+                  <button
+                    className="link"
+                    onClick={() => {
+                      if (typeof document !== "undefined") {
+                        document.cookie = `adminFichaId=${i.id}; path=/; max-age=3600`;
+                      }
+                      router.push(`/admin/ficha`);
+                    }}
+                    title={i.id}
+                  >
+                    Ficha de caracterización
+                  </button>
+                </td>
                 <td>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span className={`chip ${i.estado === "enviado" ? "success" : "gray"}`}>
@@ -147,18 +163,28 @@ export default function Admin() {
                 <td>{new Date(i.updatedAt).toLocaleString()}</td>
                 <td>
                   <div className="admin-actions">
-                    <button onClick={() => router.push(`/admin/ficha/${i.id}`)}>Ver</button>
+                    <button onClick={() => {
+                      if (typeof document !== "undefined") {
+                        document.cookie = `adminFichaId=${i.id}; path=/; max-age=3600`;
+                      }
+                      router.push(`/admin/ficha`);
+                    }}>Ver</button>
                     <a href={`/api/fichas/${i.id}/export/pdf`}>PDF</a>
                     <a href={`/api/fichas/${i.id}/export/excel`}>Excel</a>
                     <button
                       onClick={() => {
-                        const url = `${location.origin}/ficha/${i.id}`;
+                        const url = `${location.origin}/ficha`;
                         navigator.clipboard?.writeText(url);
                       }}
                     >
                       Copiar enlace
                     </button>
-                    <button onClick={() => router.push(`/ficha/${i.id}`)}>Ver pública</button>
+                    <button onClick={() => {
+                      if (typeof document !== "undefined") {
+                        document.cookie = `fichaId=${i.id}; path=/; max-age=3600`;
+                      }
+                      router.push(`/ficha`);
+                    }}>Ver pública</button>
                     <button
                       onClick={async () => {
                         const ok = typeof window !== "undefined" ? window.confirm("¿Eliminar ficha?") : true;
@@ -182,7 +208,10 @@ export default function Admin() {
                           });
                           if (!create.ok) return;
                           const data = await create.json();
-                          router.push(`/admin/ficha/${data.id}`);
+                          if (typeof document !== "undefined") {
+                            document.cookie = `adminFichaId=${data.id}; path=/; max-age=3600`;
+                          }
+                          router.push(`/admin/ficha`);
                         } catch {}
                       }}
                     >

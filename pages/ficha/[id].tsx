@@ -659,7 +659,7 @@ export default function FichaWizard() {
                         ...ficha.modulo2_nina_nino,
                         departamento_residencia: v,
                         municipio_residencia: MUNICIPIOS_MAP[v]
-                          ? (MUNICIPIOS_MAP[e.target.value][0] || "")
+                          ? (MUNICIPIOS_MAP[v][0] || "")
                           : (ficha.modulo2_nina_nino?.municipio_residencia || "")
                       } as any
                     })
@@ -1661,7 +1661,7 @@ export default function FichaWizard() {
                       <option>Madrina</option>
                       <option>Familia sustituta / institución de protección</option>
                       <option>Otro</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   {m.parentesco === "Otro" && (
                     <div>
@@ -1814,7 +1814,7 @@ export default function FichaWizard() {
                       <option>Población Gitana o Rrom</option>
                       <option>Población Palenquera</option>
                       <option>Ninguno</option>
-                    </select>
+                    </BridgeSelect>
                   </div>
                   <div>
                     <label>¿Sabe leer y escribir?</label>

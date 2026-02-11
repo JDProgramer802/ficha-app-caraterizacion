@@ -470,7 +470,7 @@ export default function FichaWizard() {
         <Progress current={step} total={STEPS} />
         {step === 0 && (
           <div className="fade-in">
-            <h2>Módulo 0 — Identificación</h2>
+            <h2 className="section-title">Identificación del formulario</h2>
             <label>Fecha de diligenciamiento (DD/MM/AAAA) <span className="required">*</span></label>
             <input
               type="date"
@@ -488,7 +488,7 @@ export default function FichaWizard() {
         )}
         {step === 2 && (
           <div className="fade-in">
-            <h2>Módulo II — Niña y Niño: Variables básicas</h2>
+            <h2 className="section-title">Información de la niña y el niño</h2>
             <div className="row">
               <div>
                 <label>Nombres <span className="required">*</span></label>
@@ -841,7 +841,7 @@ export default function FichaWizard() {
         )}
         {step === 3 && (
           <div className="fade-in">
-            <h2>Módulo II — Niña y Niño: Atenciones en salud</h2>
+            <h2 className="section-title">Salud y atenciones</h2>
             <div className="month-banner">
               <div>
                 <div className="month-count">
@@ -1462,7 +1462,7 @@ export default function FichaWizard() {
         )}
         {step === 1 && (
           <div className="fade-in">
-            <h2>Módulo I — Información Unidad de Servicio</h2>
+            <h2 className="section-title">Unidad de servicio</h2>
             <div className="row">
               <div>
                 <label>Regional <span className="required">*</span></label>
@@ -1525,7 +1525,7 @@ export default function FichaWizard() {
         )}
         {step === 4 && (
           <div className="fade-in">
-            <h2>Módulo III — Familia</h2>
+            <h2 className="section-title">Familia y composición del hogar</h2>
             <h3>O. Variables básicas</h3>
             <div className="row">
               <div>

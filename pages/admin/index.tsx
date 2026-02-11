@@ -56,10 +56,22 @@ export default function Admin() {
   }, [items, q]);
 
   return (
-    <div className="container">
-      <div className="card">
+    <div className="admin-shell">
+      <div className="admin-header">
         <h1>Admin de fichas</h1>
-        <div className="filters">
+        <div className="header-actions">
+          <button onClick={() => router.push("/")}>Inicio</button>
+          <button className="primary" onClick={async () => {
+            const r = await fetch("/api/fichas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+            if (!r.ok) return;
+            const data = await r.json();
+            router.push(`/admin/ficha/${data.id}`);
+          }}>Crear nueva</button>
+          <a href="/api/fichas/export/excel">Exportar Excel</a>
+        </div>
+      </div>
+      <div className="admin-main">
+        <div className="filters-grid">
           <select value={q.estado} onChange={(e) => setQ({ ...q, estado: e.target.value })}>
             <option value="">Estado</option>
             <option value="borrador">Borrador</option>
@@ -72,19 +84,8 @@ export default function Admin() {
           <input placeholder="Documento" value={q.documento} onChange={(e) => setQ({ ...q, documento: e.target.value })} />
           <button onClick={load}>Aplicar filtros</button>
         </div>
-        <div className="actions">
-          <button onClick={() => router.push("/")}>Volver</button>
-          <button className="primary" onClick={async () => {
-            const r = await fetch("/api/fichas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
-            if (!r.ok) return;
-            const data = await r.json();
-            router.push(`/admin/ficha/${data.id}`);
-          }}>Crear nueva ficha</button>
-          <a href="/api/fichas/export/excel" style={{ marginLeft: "auto" }}>
-            Exportar todas a Excel
-          </a>
-        </div>
-        <table className="table" style={{ marginTop: 12 }}>
+        <div className="admin-table-wrap">
+        <table className="table">
           <thead>
             <tr>
               <th>ID</th>
@@ -137,56 +138,55 @@ export default function Admin() {
                 </td>
                 <td>{new Date(i.updatedAt).toLocaleString()}</td>
                 <td>
-                  <button onClick={() => router.push(`/admin/ficha/${i.id}`)}>Ver</button>
-                  <a href={`/api/fichas/${i.id}/export/pdf`} style={{ marginLeft: 8 }}>PDF</a>
-                  <a href={`/api/fichas/${i.id}/export/excel`} style={{ marginLeft: 8 }}>Excel</a>
-                  <button
-                    style={{ marginLeft: 8 }}
-                    onClick={() => {
-                      const url = `${location.origin}/ficha/${i.id}`;
-                      navigator.clipboard?.writeText(url);
-                    }}
-                  >
-                    Copiar enlace
-                  </button>
-                  <button style={{ marginLeft: 8 }} onClick={() => router.push(`/ficha/${i.id}`)}>Ver pública</button>
-                  <button
-                    style={{ marginLeft: 8 }}
-                    onClick={async () => {
-                      const ok = typeof window !== "undefined" ? window.confirm("¿Eliminar ficha?") : true;
-                      if (!ok) return;
-                      await fetch(`/api/fichas/${i.id}`, { method: "DELETE" });
-                      await load();
-                    }}
-                  >
-                    Eliminar
-                  </button>
-                  <button
-                    style={{ marginLeft: 8 }}
-                    onClick={async () => {
-                      try {
-                        const r = await fetch(`/api/fichas/${i.id}`);
-                        const ficha = await r.json();
-                        // Duplicar a nuevo id con estado borrador y fecha de diligenciamiento hoy
-                        const nuevo = { ...ficha, id: undefined, estado: "borrador" as const };
-                        const create = await fetch("/api/fichas", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(nuevo)
-                        });
-                        if (!create.ok) return;
-                        const data = await create.json();
-                        router.push(`/admin/ficha/${data.id}`);
-                      } catch {}
-                    }}
-                  >
-                    Duplicar
-                  </button>
+                  <div className="admin-actions">
+                    <button onClick={() => router.push(`/admin/ficha/${i.id}`)}>Ver</button>
+                    <a href={`/api/fichas/${i.id}/export/pdf`}>PDF</a>
+                    <a href={`/api/fichas/${i.id}/export/excel`}>Excel</a>
+                    <button
+                      onClick={() => {
+                        const url = `${location.origin}/ficha/${i.id}`;
+                        navigator.clipboard?.writeText(url);
+                      }}
+                    >
+                      Copiar enlace
+                    </button>
+                    <button onClick={() => router.push(`/ficha/${i.id}`)}>Ver pública</button>
+                    <button
+                      onClick={async () => {
+                        const ok = typeof window !== "undefined" ? window.confirm("¿Eliminar ficha?") : true;
+                        if (!ok) return;
+                        await fetch(`/api/fichas/${i.id}`, { method: "DELETE" });
+                        await load();
+                      }}
+                    >
+                      Eliminar
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const r = await fetch(`/api/fichas/${i.id}`);
+                          const ficha = await r.json();
+                          const nuevo = { ...ficha, id: undefined, estado: "borrador" as const };
+                          const create = await fetch("/api/fichas", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(nuevo)
+                          });
+                          if (!create.ok) return;
+                          const data = await create.json();
+                          router.push(`/admin/ficha/${data.id}`);
+                        } catch {}
+                      }}
+                    >
+                      Duplicar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
         {loading && <div style={{ marginTop: 8 }} className="muted">Cargando...</div>}
       </div>
     </div>

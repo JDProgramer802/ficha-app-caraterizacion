@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import Progress from "../../components/Progress";
 import BridgeSelect from "../../components/BridgeSelect";
@@ -283,10 +283,12 @@ export default function FichaWizard() {
   const { id } = router.query as { id: string };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [autoSaving, setAutoSaving] = useState(false);
   const [ficha, setFicha] = useState<Ficha | null>(null);
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [toast, setToast] = useState("");
+  const debounceRef = useRef<number | null>(null);
 
   function todayIso() {
     const d = new Date();
@@ -349,8 +351,23 @@ export default function FichaWizard() {
         if (!data.modulo2_nina_nino) {
           data.modulo2_nina_nino = {} as any;
         }
-        setFicha(data);
-        setStep((data && (data.currentStep ?? 0)) || 0);
+        let merged = data;
+        try {
+          const raw = typeof localStorage !== "undefined" ? localStorage.getItem(`ficha:draft:${id}`) : null;
+          if (raw) {
+            const draft = JSON.parse(raw || "{}");
+            merged = {
+              ...data,
+              ...draft,
+              modulo1_unidad_servicio: { ...(data.modulo1_unidad_servicio || {}), ...(draft.modulo1_unidad_servicio || {}) },
+              modulo2_nina_nino: { ...(data.modulo2_nina_nino || {}), ...(draft.modulo2_nina_nino || {}) },
+              modulo3_familia: { ...(data.modulo3_familia || {}), ...(draft.modulo3_familia || {}) },
+              currentStep: draft.currentStep ?? data.currentStep
+            };
+          }
+        } catch {}
+        setFicha(merged);
+        setStep((merged && (merged.currentStep ?? 0)) || 0);
       })
       .catch(() => {
         setFicha(null);
@@ -401,7 +418,22 @@ export default function FichaWizard() {
 
   function updateFicha(partial: Partial<Ficha>) {
     if (!ficha) return;
-    setFicha({ ...ficha, ...partial });
+    const next = { ...ficha, ...partial };
+    setFicha(next);
+    try {
+      if (id && typeof localStorage !== "undefined") {
+        const prevRaw = localStorage.getItem(`ficha:draft:${id}`);
+        const prev = prevRaw ? JSON.parse(prevRaw) : {};
+        const combined = {
+          ...prev,
+          ...next,
+          modulo1_unidad_servicio: { ...(prev?.modulo1_unidad_servicio || {}), ...(next.modulo1_unidad_servicio || {}) },
+          modulo2_nina_nino: { ...(prev?.modulo2_nina_nino || {}), ...(next.modulo2_nina_nino || {}) },
+          modulo3_familia: { ...(prev?.modulo3_familia || {}), ...(next.modulo3_familia || {}) },
+        };
+        localStorage.setItem(`ficha:draft:${id}`, JSON.stringify(combined));
+      }
+    } catch {}
   }
 
   async function guardar(estado?: "borrador" | "enviado") {
@@ -418,6 +450,45 @@ export default function FichaWizard() {
       setTimeout(() => setToast(""), 2000);
     }
   }
+
+  useEffect(() => {
+    if (!ficha || !id) return;
+    try {
+      if (typeof localStorage !== "undefined") {
+        const raw = localStorage.getItem(`ficha:draft:${id}`);
+        const prev = raw ? JSON.parse(raw) : {};
+        localStorage.setItem(`ficha:draft:${id}`, JSON.stringify({ ...prev, currentStep: step }));
+      }
+    } catch {}
+  }, [step, ficha, id]);
+
+  useEffect(() => {
+    if (!ficha || !id) return;
+    if (ficha.estado === "enviado") return;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null as any;
+    }
+    debounceRef.current = window.setTimeout(async () => {
+      try {
+        setAutoSaving(true);
+        const payload = { ...ficha, currentStep: step, estado: ficha.estado };
+        await fetch(`/api/fichas/${ficha.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } finally {
+        setAutoSaving(false);
+      }
+    }, 800);
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null as any;
+      }
+    };
+  }, [ficha, step, id]);
 
   async function crearNuevaFicha() {
     const r = await fetch("/api/fichas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
@@ -2066,9 +2137,11 @@ export default function FichaWizard() {
           <button onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
             Anterior
           </button>
-          <button onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))} disabled={!canNext || step === STEPS - 1}>
-            Siguiente
-          </button>
+          {step < STEPS - 1 && (
+            <button onClick={() => setStep((s) => Math.min(STEPS - 1, s + 1))} disabled={!canNext}>
+              Siguiente
+            </button>
+          )}
           <button onClick={() => guardar("borrador")} disabled={saving}>
             {saving ? "Guardando..." : "Guardar borrador"}
           </button>
@@ -2078,6 +2151,7 @@ export default function FichaWizard() {
         </div>
       </div>
       {toast && <div className="toast">{toast}</div>}
+      {autoSaving && <div className="muted" style={{ marginTop: 8 }}>Guardado automático…</div>}
     </div>
   );
 }

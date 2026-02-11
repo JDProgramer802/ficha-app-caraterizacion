@@ -20,6 +20,8 @@ export default function Admin() {
   const [items, setItems] = useState<Item[]>([]);
   const [q, setQ] = useState({ estado: "", fecha: "", regional: "", centro_zonal: "", nombre: "", documento: "" });
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   async function load() {
     setLoading(true);
@@ -35,6 +37,7 @@ export default function Admin() {
       const r = await fetch(url);
       const data = await r.json();
       setItems(data);
+      setPage(0);
     } finally {
       setLoading(false);
     }
@@ -56,6 +59,11 @@ export default function Admin() {
       return true;
     });
   }, [items, q]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const pageItems = useMemo(() => {
+    const start = page * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
 
   return (
     <div className="admin-shell">
@@ -93,6 +101,20 @@ export default function Admin() {
           <input placeholder="Nombre niña/niño" value={q.nombre} onChange={(e) => setQ({ ...q, nombre: e.target.value })} />
           <input placeholder="Documento" value={q.documento} onChange={(e) => setQ({ ...q, documento: e.target.value })} />
           <button onClick={load}>Aplicar filtros</button>
+          <FancySelect
+            compact
+            value={String(pageSize)}
+            onChange={(v) => {
+              const n = Number(v || 10);
+              setPageSize(n);
+              setPage(0);
+            }}
+            options={[
+              { value: "10", label: "10 / página" },
+              { value: "20", label: "20 / página" },
+              { value: "50", label: "50 / página" }
+            ]}
+          />
         </div>
         <div className="admin-table-wrap">
         <table className="table">
@@ -111,7 +133,7 @@ export default function Admin() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((i) => (
+            {pageItems.map((i) => (
               <tr key={i.id}>
                 <td>
                   <button
@@ -241,6 +263,14 @@ export default function Admin() {
             ))}
           </tbody>
         </table>
+        </div>
+        <div className="actions" style={{ marginTop: 12, justifyContent: "space-between", display: "flex" }}>
+          <div className="muted">Mostrando {pageItems.length} de {filtered.length}</div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>Anterior</button>
+            <span>Página {page + 1} de {totalPages}</span>
+            <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>Siguiente</button>
+          </div>
         </div>
         {loading && <div style={{ marginTop: 8 }} className="muted">Cargando...</div>}
       </div>

@@ -1557,14 +1557,20 @@ export default function FichaWizard() {
                     tipo_documento: "Registro Civil",
                     numero_documento: ""
                   } as IntegranteHogar);
-                  updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
+                  updateFicha({
+                    modulo3_familia: {
+                      ...ficha.modulo3_familia,
+                      integrantes: lista,
+                      numero_personas_hogar: lista.length
+                    } as any
+                  });
                 }}
               >
                 Agregar integrante
               </button>
             </div>
             {(ficha.modulo3_familia?.integrantes || []).map((m, idx) => (
-              <div key={idx} className="card" style={{ marginBottom: 12 }}>
+              <div key={idx} className="card pop-in" style={{ marginBottom: 12 }}>
                 <div className="row">
                   <div>
                     <label>Parentesco</label>
@@ -1845,7 +1851,13 @@ export default function FichaWizard() {
                     onClick={() => {
                       const lista = [...(ficha.modulo3_familia?.integrantes || [])];
                       lista.splice(idx, 1);
-                      updateFicha({ modulo3_familia: { ...ficha.modulo3_familia, integrantes: lista } as any });
+                      updateFicha({
+                        modulo3_familia: {
+                          ...ficha.modulo3_familia,
+                          integrantes: lista,
+                          numero_personas_hogar: lista.length
+                        } as any
+                      });
                     }}
                   >
                     Quitar integrante

@@ -39,6 +39,21 @@ body {
   line-height: 1.45;
 }
 
+.container h1 {
+  font-size: 24px;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+}
+.container h2 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+.container h3 {
+  font-size: 16px;
+  margin: 6px 0 10px;
+}
+
 .container {
   max-width: 960px;
   margin: 0 auto;
@@ -199,6 +214,32 @@ button.primary {
 
 button.primary:hover {
   background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+}
+
+.button-secondary {
+  background: #fff;
+  color: #111827;
+}
+.button-secondary:hover {
+  background: #f8fafc;
+}
+.button-ghost {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.button-ghost:hover {
+  background: rgba(17,24,39,0.05);
+}
+.button-success {
+  background: linear-gradient(135deg, #10b981, #0ea5e9);
+  color: #fff;
+  border-color: rgba(16,185,129,0.35);
+}
+.button-warning {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: #fff;
+  border-color: rgba(245,158,11,0.35);
 }
 
 /* Progress */
@@ -370,6 +411,14 @@ button.primary:hover {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.pop-in {
+  animation: popIn 220ms var(--ease) both;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Mobile */

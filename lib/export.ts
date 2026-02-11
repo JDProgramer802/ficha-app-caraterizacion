@@ -4,22 +4,26 @@ import * as XLSX from "xlsx";
 
 export async function buildFichaPdf(ficha: Ficha): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([595.28, 841.89]);
+  let page = pdfDoc.addPage([595.28, 841.89]);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const { width } = page.getSize();
 
   let y = 800;
-  const title = "Ficha de caracterizacion";
-  page.drawText(title, { x: 40, y, size: 18, font, color: rgb(0, 0, 0) });
+  page.drawRectangle({ x: 40, y: y - 24, width: width - 80, height: 28, color: rgb(0.30, 0.41, 1), opacity: 0.12 });
+  page.drawText("Ficha de caracterizacion", { x: 48, y, size: 18, font: fontBold, color: rgb(0.15, 0.22, 0.45) });
   y -= 30;
-  page.drawText(`ID: ${ficha.id} | Estado: ${ficha.estado}`, { x: 40, y, size: 12, font });
+  const estadoColor = ficha.estado === "enviado" ? rgb(0.18, 0.80, 0.44) : rgb(0.39, 0.46, 0.58);
+  page.drawText(`ID: ${ficha.id}`, { x: 48, y, size: 12, font });
+  page.drawText("•", { x: 180, y, size: 12, font, color: estadoColor });
+  page.drawText(`Estado: ${ficha.estado}`, { x: 192, y, size: 12, font, color: estadoColor });
   y -= 20;
 
-  y = drawSection(page, font, width, y, "Módulo 0 — Identificación", [
+  y = drawSection(pdfDoc, () => (page = pdfDoc.addPage([595.28, 841.89])), page, font, fontBold, width, y, "Módulo 0 — Identificación", [
     ["Fecha de diligenciamiento", ficha.modulo0_identificacion.fecha_diligenciamiento]
   ]);
 
-  y = drawSection(page, font, width, y, "Módulo I — Información Unidad de Servicio", [
+  y = drawSection(pdfDoc, () => (page = pdfDoc.addPage([595.28, 841.89])), page, font, fontBold, width, y, "Módulo I — Información Unidad de Servicio", [
     ["Regional", ficha.modulo1_unidad_servicio.regional],
     ["Centro Zonal", ficha.modulo1_unidad_servicio.centro_zonal],
     ["NIT Entidad", ficha.modulo1_unidad_servicio.nit_entidad],
@@ -27,7 +31,7 @@ export async function buildFichaPdf(ficha: Ficha): Promise<Uint8Array> {
     ["Nombre del Agente Educativo", ficha.modulo1_unidad_servicio.nombre_agente_educativo]
   ]);
 
-  y = drawSection(page, font, width, y, "Módulo II — Niña y Niño", [
+  y = drawSection(pdfDoc, () => (page = pdfDoc.addPage([595.28, 841.89])), page, font, fontBold, width, y, "Módulo II — Niña y Niño", [
     ["Nombres", ficha.modulo2_nina_nino.nombres],
     ["Apellidos", ficha.modulo2_nina_nino.apellidos],
     ["Tipo documento", ficha.modulo2_nina_nino.tipo_documento],
@@ -51,11 +55,17 @@ export async function buildFichaPdf(ficha: Ficha): Promise<Uint8Array> {
   return pdfBytes;
 }
 
-function drawSection(page: any, font: any, width: number, y: number, title: string, rows: [string, string][]) {
+function drawSection(pdfDoc: PDFDocument, addPage: () => void, page: any, font: any, fontBold: any, width: number, y: number, title: string, rows: [string, string][]) {
   y -= 10;
-  page.drawText(title, { x: 40, y, size: 14, font });
-  y -= 18;
+  page.drawRectangle({ x: 40, y: y - 18, width: width - 80, height: 22, color: rgb(0.30, 0.41, 1), opacity: 0.08 });
+  page.drawText(title, { x: 48, y, size: 14, font: fontBold, color: rgb(0.15, 0.22, 0.45) });
+  y -= 20;
   rows.forEach(([label, value]) => {
+    if (y < 100) {
+      addPage();
+      const { height } = page.getSize();
+      y = height - 80;
+    }
     const text = `${label}: ${value || ""}`;
     page.drawText(text, { x: 50, y, size: 12, font });
     y -= 16;
@@ -77,6 +87,8 @@ export function buildFichaExcel(ficha: Ficha): XLSX.WorkBook {
     }
   ]);
   XLSX.utils.book_append_sheet(wb, wsIdent, "Identificación");
+  wsIdent["!autofilter"] = { ref: "A1:F1" };
+  wsIdent["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 22 }, { wch: 22 }, { wch: 22 }];
   // Unidad de Servicio
   const wsUDS = XLSX.utils.json_to_sheet([
     {
@@ -89,6 +101,8 @@ export function buildFichaExcel(ficha: Ficha): XLSX.WorkBook {
     }
   ]);
   XLSX.utils.book_append_sheet(wb, wsUDS, "Unidad de Servicio");
+  wsUDS["!autofilter"] = { ref: "A1:G1" };
+  wsUDS["!cols"] = [{ wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 16 }, { wch: 20 }, { wch: 24 }, { wch: 26 }];
   // Niña y Niño
   const wsNN = XLSX.utils.json_to_sheet([
     {
@@ -113,6 +127,11 @@ export function buildFichaExcel(ficha: Ficha): XLSX.WorkBook {
     }
   ]);
   XLSX.utils.book_append_sheet(wb, wsNN, "Niña y Niño");
+  wsNN["!autofilter"] = { ref: "A1:Q1" };
+  wsNN["!cols"] = [
+    { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 14 }, { wch: 16 }, { wch: 18 },
+    { wch: 20 }, { wch: 24 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 22 }
+  ];
   // Familia (variables del módulo)
   const fam = ficha.modulo3_familia || ({} as any);
   const wsFam = XLSX.utils.json_to_sheet([
@@ -132,6 +151,8 @@ export function buildFichaExcel(ficha: Ficha): XLSX.WorkBook {
     }
   ]);
   XLSX.utils.book_append_sheet(wb, wsFam, "Familia");
+  wsFam["!autofilter"] = { ref: "A1:L1" };
+  wsFam["!cols"] = [{ wch: 12 }, { wch: 24 }, { wch: 18 }, { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 24 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 20 }];
   // Integrantes
   const miembros = (fam.integrantes || []).map((m: any, idx: number) => ({
     ficha_id: ficha.id,
@@ -158,6 +179,11 @@ export function buildFichaExcel(ficha: Ficha): XLSX.WorkBook {
   }));
   const wsInt = XLSX.utils.json_to_sheet(miembros.length ? miembros : [{ ficha_id: ficha.id }]);
   XLSX.utils.book_append_sheet(wb, wsInt, "Integrantes");
+  wsInt["!autofilter"] = { ref: "A1:R1" };
+  wsInt["!cols"] = [
+    { wch: 12 }, { wch: 8 }, { wch: 18 }, { wch: 18 }, { wch: 24 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
+    { wch: 10 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 }
+  ];
   return wb;
 }
 
@@ -172,6 +198,9 @@ export function buildExcelTodas(fichas: Ficha[]): XLSX.WorkBook {
     updatedAt: f.updatedAt
   }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(identRows), "Identificación");
+  const wsIdent = wb.Sheets["Identificación"];
+  wsIdent["!autofilter"] = { ref: "A1:E1" };
+  wsIdent["!cols"] = [{ wch: 12 }, { wch: 10 }, { wch: 18 }, { wch: 22 }, { wch: 22 }];
   // Unidad de Servicio
   const udsRows = fichas.map((f) => ({
     ficha_id: f.id,
@@ -182,6 +211,9 @@ export function buildExcelTodas(fichas: Ficha[]): XLSX.WorkBook {
     nombre_agente_educativo: f.modulo1_unidad_servicio.nombre_agente_educativo
   }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(udsRows), "Unidad de Servicio");
+  const wsUDS = wb.Sheets["Unidad de Servicio"];
+  wsUDS["!autofilter"] = { ref: "A1:F1" };
+  wsUDS["!cols"] = [{ wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 16 }, { wch: 20 }, { wch: 24 }];
   // Niña y Niño
   const nnRows = fichas.map((f) => ({
     ficha_id: f.id,
@@ -204,6 +236,12 @@ export function buildExcelTodas(fichas: Ficha[]): XLSX.WorkBook {
     primer_alimento_7a24m: f.modulo2_nina_nino.primer_alimento_7a24m || ""
   }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(nnRows), "Niña y Niño");
+  const wsNN = wb.Sheets["Niña y Niño"];
+  wsNN["!autofilter"] = { ref: "A1:Q1" };
+  wsNN["!cols"] = [
+    { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 18 }, { wch: 14 }, { wch: 16 }, { wch: 18 },
+    { wch: 20 }, { wch: 24 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 22 }
+  ];
   // Familia (variables del módulo)
   const famRows = fichas.map((f) => {
     const fam = f.modulo3_familia || ({} as any);
@@ -223,6 +261,9 @@ export function buildExcelTodas(fichas: Ficha[]): XLSX.WorkBook {
     };
   });
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(famRows), "Familia");
+  const wsFam = wb.Sheets["Familia"];
+  wsFam["!autofilter"] = { ref: "A1:L1" };
+  wsFam["!cols"] = [{ wch: 12 }, { wch: 24 }, { wch: 18 }, { wch: 12 }, { wch: 18 }, { wch: 18 }, { wch: 24 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 22 }, { wch: 20 }];
   const miembros = fichas.flatMap((f) =>
     (f.modulo3_familia?.integrantes || []).map((m, idx) => ({
       ficha_id: f.id,
@@ -251,6 +292,11 @@ export function buildExcelTodas(fichas: Ficha[]): XLSX.WorkBook {
   if (miembros.length > 0) {
     const ws2 = XLSX.utils.json_to_sheet(miembros);
     XLSX.utils.book_append_sheet(wb, ws2, "Integrantes");
+    ws2["!autofilter"] = { ref: "A1:R1" };
+    ws2["!cols"] = [
+      { wch: 12 }, { wch: 8 }, { wch: 18 }, { wch: 18 }, { wch: 24 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
+      { wch: 10 }, { wch: 18 }, { wch: 18 }, { wch: 20 }, { wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 22 }, { wch: 18 }, { wch: 22 }
+    ];
   }
   return wb;
 }

@@ -366,6 +366,52 @@ button.secondary:hover {
   100% { left: 100%; }
 }
 
+/* Chips de estado y etiquetas */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+}
+.chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+.chip.success { border-color: rgba(46, 204, 113, 0.3); background: #f0fff5; color: #0b6b3a; }
+.chip.success .dot { background: #2ecc71; }
+.chip.warning { border-color: rgba(241, 196, 15, 0.4); background: #fffbea; color: #7a5e00; }
+.chip.warning .dot { background: #f1c40f; }
+.chip.info { border-color: rgba(76, 111, 255, 0.3); background: #eef3ff; color: #274184; }
+.chip.info .dot { background: #4c6fff; }
+.chip.gray { border-color: var(--border-strong); background: #f8fafc; color: #334155; }
+.chip.gray .dot { background: #64748b; }
+
+/* Barra de progreso compacta para tablas */
+.mini-progress {
+  width: 120px;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.mini-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--gradient-primary);
+  width: 0%;
+  transition: width 300ms var(--ease);
+}
+
 /* Mobile optimizado */
 @media (max-width: 768px) {
   .container { padding: 20px 16px; }

@@ -100,6 +100,14 @@ export type ModuloNinaNino = {
     | "Otro";
   motivo_no_auditiva_otro?: string;
   valoracion_visual_mayor3a?: "SI" | "NO";
+  motivo_no_visual?:
+    | "Falta de dinero"
+    | "No sabe la utilidad de esta valoración"
+    | "No le interesa"
+    | "No hay entidad cercana"
+    | "Motivos religiosos"
+    | "Otro";
+  motivo_no_visual_otro?: string;
   alergico_medicamento_alimento: "Si" | "No" | "No sabe";
   alergico_detalle?: string;
   valoracion_integral: "SI" | "NO";

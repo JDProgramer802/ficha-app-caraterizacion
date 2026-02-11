@@ -98,6 +98,14 @@ type NinaNino = {
   | "Otro";
   motivo_no_auditiva_otro?: string;
   valoracion_visual_mayor3a?: "SI" | "NO";
+  motivo_no_visual?:
+  | "Falta de dinero"
+  | "No sabe la utilidad de esta valoración"
+  | "No le interesa"
+  | "No hay entidad cercana"
+  | "Motivos religiosos"
+  | "Otro";
+  motivo_no_visual_otro?: string;
   alergico_medicamento_alimento: "Si" | "No" | "No sabe";
   alergico_detalle?: string;
   valoracion_integral: "SI" | "NO";
@@ -375,6 +383,9 @@ export default function FichaWizard() {
       if (n.afiliacion_salud === "No afiliado" && !n.razon_no_afiliado) return false;
       if (!n.esquema_vacunacion) return false;
       if (n.esquema_vacunacion === "Esquema incompleto" && !n.razon_vacunacion_incompleta) return false;
+      if (n.atencion_bucal_mayor6m === "Sin atención salud bucal" && !n.motivo_no_bucal) return false;
+      if (n.valoracion_auditiva_mayor6m === "Sin valoración auditiva" && !n.motivo_no_auditiva) return false;
+      if (n.valoracion_visual_mayor3a === "NO" && !n.motivo_no_visual) return false;
       return true;
     }
     if (step === 4) {
@@ -831,6 +842,17 @@ export default function FichaWizard() {
         {step === 3 && (
           <div className="fade-in">
             <h2>Módulo II — Niña y Niño: Atenciones en salud</h2>
+            <div className="month-banner">
+              <div>
+                <div className="month-count">
+                  {monthsFrom(toIso(ficha.modulo2_nina_nino?.fecha_nacimiento))} meses
+                </div>
+                <div className="month-sub">
+                  {yearsFrom(toIso(ficha.modulo2_nina_nino?.fecha_nacimiento))} años
+                </div>
+              </div>
+              <div className="chip">Secciones aparecen según edad</div>
+            </div>
             <h3>Validación servicios de salud</h3>
             <div className="row">
               <div>
@@ -1054,6 +1076,41 @@ export default function FichaWizard() {
                   <option>SI</option>
                   <option>NO</option>
                 </select>
+                {ficha.modulo2_nina_nino?.valoracion_visual_mayor3a === "NO" && (
+                  <div style={{ marginTop: 8 }}>
+                    <label>Motivo</label>
+                    <select
+                      value={ficha.modulo2_nina_nino?.motivo_no_visual || ""}
+                      onChange={(e) =>
+                        updateFicha({
+                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_visual: e.target.value as any } as any
+                        })
+                      }
+                    >
+                      <option value="">Seleccione</option>
+                      <option>Falta de dinero</option>
+                      <option>No sabe la utilidad de esta valoración</option>
+                      <option>No le interesa</option>
+                      <option>No hay entidad cercana</option>
+                      <option>Motivos religiosos</option>
+                      <option>Otro</option>
+                    </select>
+                    {!ficha.modulo2_nina_nino?.motivo_no_visual && <div className="error-text">Campo obligatorio</div>}
+                  </div>
+                )}
+                {ficha.modulo2_nina_nino?.motivo_no_visual === "Otro" && (
+                  <div style={{ marginTop: 8 }}>
+                    <label>Especifique otro motivo visual</label>
+                    <input
+                      value={ficha.modulo2_nina_nino?.motivo_no_visual_otro || ""}
+                      onChange={(e) =>
+                        updateFicha({
+                          modulo2_nina_nino: { ...ficha.modulo2_nina_nino, motivo_no_visual_otro: e.target.value } as any
+                        })
+                      }
+                    />
+                  </div>
+                )}
               </div>
             )}
             <div className="row" style={{ marginTop: 12 }}>

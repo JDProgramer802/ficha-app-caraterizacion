@@ -6,6 +6,7 @@ export type MenuItem = {
   onClick: () => void;
   danger?: boolean;
   disabled?: boolean;
+  icon?: "sun" | "moon" | "system";
 };
 
 export default function ActionMenu({
@@ -13,11 +14,13 @@ export default function ActionMenu({
   items,
   align = "right",
   ariaLabel = "Menú de acciones",
+  triggerIcon,
 }: {
   label?: string;
   items: MenuItem[];
   align?: "left" | "right";
   ariaLabel?: string;
+  triggerIcon?: "sun" | "moon" | "system";
 }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -104,8 +107,8 @@ export default function ActionMenu({
         onKeyDown={onKey}
         ref={triggerRef}
       >
-        <span className="trigger-icon" />
-        {label}
+        <span className={`trigger-icon ${triggerIcon ?? ""}`} />
+        {label && <span className="trigger-label">{label}</span>}
         <span className="trigger-caret" />
       </button>
       {open && rect && typeof document !== "undefined" &&
@@ -125,17 +128,18 @@ export default function ActionMenu({
               <button
                 key={idx}
                 ref={(el) => (itemRefs.current[idx] = el)}
-                className={`menu-item ${it.danger ? "danger" : ""} ${activeIndex === idx ? "active" : ""} ${it.disabled ? "disabled" : ""}`}
+                className={`menu-item ${it.icon ? "icon-only" : ""} ${it.danger ? "danger" : ""} ${activeIndex === idx ? "active" : ""} ${it.disabled ? "disabled" : ""}`}
                 role="menuitem"
                 tabIndex={-1}
                 aria-disabled={it.disabled ? "true" : "false"}
+                aria-label={it.icon ? it.label : undefined}
                 onClick={() => {
                   if (it.disabled) return;
                   setOpen(false);
                   it.onClick();
                 }}
               >
-                {it.label}
+                {it.icon ? <span className={`icon ${it.icon}`} /> : it.label}
               </button>
             ))}
           </div>,

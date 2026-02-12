@@ -2,7 +2,6 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import "../styles/globals.css";
-import ActionMenu from "../components/ActionMenu";
 import { Analytics } from "@vercel/analytics/react";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -28,6 +27,12 @@ export default function App({ Component, pageProps }: AppProps) {
     }
   }
 
+  function cycleTheme() {
+    if (theme === "light") applyTheme("dark");
+    else if (theme === "dark") applyTheme("system");
+    else applyTheme("light");
+  }
+
   return (
     <>
       <Head>
@@ -37,16 +42,35 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <Component {...pageProps} />
       <div className="theme-switch">
-        <ActionMenu
-          label={theme === "dark" ? "Tema: Oscuro" : theme === "light" ? "Tema: Claro" : "Tema: Sistema"}
-          ariaLabel="Selector de tema"
-          align="right"
-          items={[
-            { label: "Claro", onClick: () => applyTheme("light") },
-            { label: "Oscuro", onClick: () => applyTheme("dark") },
-            { label: "Sistema", onClick: () => applyTheme("system") },
-          ]}
-        />
+        <div className="theme-group" role="group" aria-label="Selector de tema">
+          <button
+            type="button"
+            className={`theme-btn ${theme === "light" ? "active" : ""}`}
+            aria-label="Tema claro"
+            title="Tema claro"
+            onClick={() => applyTheme("light")}
+          >
+            <span className="icon sun" />
+          </button>
+          <button
+            type="button"
+            className={`theme-btn ${theme === "dark" ? "active" : ""}`}
+            aria-label="Tema oscuro"
+            title="Tema oscuro"
+            onClick={() => applyTheme("dark")}
+          >
+            <span className="icon moon" />
+          </button>
+          <button
+            type="button"
+            className={`theme-btn ${theme === "system" ? "active" : ""}`}
+            aria-label="Tema sistema"
+            title="Tema sistema"
+            onClick={() => applyTheme("system")}
+          >
+            <span className="icon system" />
+          </button>
+        </div>
       </div>
       <Analytics />
     </>
